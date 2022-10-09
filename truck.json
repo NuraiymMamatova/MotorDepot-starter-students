@@ -1,19 +1,19 @@
 [
   {
     "id": 1,
-    "truckName": "Renault ",
+    "truckName": "Renault      ",
     "driver": " ",
     "State": "BASE"
   },
   {
     "id": 2,
-    "truckName": "Volvo   ",
+    "truckName": "Volvo        ",
     "driver": " ",
     "State": "BASE"
   },
   {
     "id": 3,
-    "truckName": "DAF XT  ",
+    "truckName": "DAF XT       ",
     "driver": " ",
     "State": "BASE"
   },
@@ -25,7 +25,7 @@
   },
   {
     "id": 5,
-    "truckName": "Bumble Bee",
+    "truckName": "Bumble Bee   ",
     "driver": " ",
     "State": "BASE"
   }

@@ -2,12 +2,12 @@ package com.company.service;
 
 public interface Service {
 
-    void changeDriver(int truckId);
+    void changeDriver();
 
-    void startDriving(int truckId);
+    void startDriving();
 
-    void startRepair(int truckId);
+    void startRepair();
 
-    void changeTruckState();
+    void changeTruckState() throws NoSuchFieldException;
 
 }
