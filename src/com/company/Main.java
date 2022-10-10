@@ -11,12 +11,10 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
-    static Scanner in = new Scanner(System.in);
     public static final GsonBuilder BUILDER = new GsonBuilder();
     public static final Gson GSON = BUILDER.setPrettyPrinting().create();
     public static final Path WRITE_PATH = Paths.get("./truck.json");
     public static final Path WRITE_PATH1 = Paths.get("./driver.json");
-
     public static void main(String[] args) throws Exception {
         Scanner in = new Scanner(System.in);
         ServiceImpl service = new ServiceImpl();
@@ -37,7 +35,6 @@ public class Main {
             System.out.println("IF you want stop this while return 'x' if you not want stop this while return command : ");
             button = in.nextLine();
         }
-
 
         }
 //        Truck[] truck = {

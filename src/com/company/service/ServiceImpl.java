@@ -1,16 +1,15 @@
 package com.company.service;
 
-
 import com.company.entities.Driver;
 import com.company.entities.Truck;
 
 import java.util.*;
 
-
 import static com.company.Main.*;
 
 public class ServiceImpl implements Service {
     static Scanner in = new Scanner(System.in);
+
     List<Truck> trucks = new ArrayList<>(List.of(GSON.fromJson(readTtuck(), Truck[].class)));
     List<Driver> drivers = new ArrayList<>(List.of(GSON.fromJson(readDriver(), Driver[].class)));
 
@@ -34,7 +33,7 @@ public class ServiceImpl implements Service {
                     System.out.println("\nid driver");
                     int driversId = in.nextInt();
                     for (Driver driver : drivers) {
-                        if (driversId == driver.getIdDiver() && !Objects.equals(truck.getDriver(), driver.getName())) {
+                        if (driversId == driver.getIdDiver() && !Objects.equals(truck.getDriver(), driver.getName()) && driver.getTruckName().isEmpty()) {
                             truck.setDriver(driver.getName());
                             driver.setTruckName(truck.getTruckName());
                             printTableAboutDrivers();
@@ -43,6 +42,7 @@ public class ServiceImpl implements Service {
                     }
                 } else if (truck.getState().equals(Truck.State.ROUTE)) {
                     System.out.println("Грузовик в пути, невозможно сменить водителя");
+                    break;
                 }
             }
         } catch (Exception exception) {
@@ -53,61 +53,86 @@ public class ServiceImpl implements Service {
 
     @Override
     public void startDriving() {
-        try{
         printTableAboutTrucks();
         System.out.println("Return truck Id: ");
         int truckId = in.nextInt();
-        for (Truck truck : trucks) {
-            if (truck.getId() == truckId && !truck.getDriver().isEmpty()) {
-                truck.setState(Truck.State.ROUTE);
-                System.out.println("успешно вышли на маршрут");
-                printTableAboutTrucks();
-                System.out.println("IF you want change state to state on repair, return repair or not return return ");
-                String state = in.nextLine();
-                if (state.equalsIgnoreCase("repair") && truck.getId() == truckId || state.contains("Repair") && truckId == truck.getId()) {
-                    startRepair();
-                    //System.out.println("успешно вышли на ремонт");
-                }
-            } else if (truck.getState().equals(Truck.State.ROUTE) && truck.getId() == truck.getId()) {
-                System.out.println("Грузовик уже в пути");
-            }
-        }
-        }finally {
+        int counter = 0;
+            for (Truck truck : trucks) {
+                try {
+                    counter++;
+                    if (truck.getState().equals(Truck.State.ROUTE) && truck.getId() == truckId /*&& truck.getDriver() != null*/) {
+                    System.out.println("Грузовик уже в пути");
+                }else if (truck.getId() == truckId && !truck.getDriver().isEmpty() && !truck.getState().equals(Truck.State.ROUTE) && !truck.getDriver().equals("")) {
+                    truck.setState(Truck.State.ROUTE);
+                    System.out.println("успешно вышли на маршрут");
+                    printTableAboutTrucks();
 
+                }else {
+                    System.out.println("Truck driver is empty!");
+                    break;
+                }
+            } finally {
+                    if (!truck.getDriver().equals("") && truck.getId() ==truckId) {
+                     System.out.println("IF you want change state to state on repair, return 1 if not, return 0 ");
+                        int state = in.nextInt();
+                        if (state == 1 && truck.getId() == truckId) {
+                            startRepair();
+                            break;
+                        } else if (state == 0) {
+                            break;
+                        }
+                    }else if (counter == 1){
+                        break;
+                    }
+        }
         }
     }
 
     @Override
     public void startRepair() {
-        try{
         printTableAboutTrucks();
         System.out.println("Chose and return id truck for start repair: ");
         int truckId = in.nextInt();
-        for (Truck truck : trucks) {
-            System.out.println("if you want случайным образом изменить состояние грузовика на “route” или “base” return ”yes” if not return ”no” ");
-            String state = in.nextLine();
-            if (truckId == truck.getId()) {
-                truck.setState(Truck.State.REPAIR);
-                System.out.println("успешно вышли на ремонт");
-            } else if (truck.getState().equals(Truck.State.REPAIR) && truck.getId() == truckId) {
-                System.out.println("Уже в ремонте");
-            } else if (!truck.getState().equals(Truck.State.BASE) && truck.getId() == truckId) {
-                truck.setState(Truck.State.BASE);
-                System.out.println("Truck on base");
-            } else if (state.contains("Yes") && truck.getId() == truckId || state.equalsIgnoreCase("yes") && truck.getId() == truckId) {
-                Random random = new Random();
-                int stateSecond = random.nextInt(1, 3);
-                if (stateSecond == 1) {
-                    startDriving();
-                    System.out.println("успешно вышли на маршрут");
+        try {
+            for (Truck truck : trucks) {
+                if (truck.getDriver().isEmpty() || truck.getDriver() == null || truck.getDriver().equals("")){
+                System.out.println("Truck is empty!");
+                }else if (truck.getState().equals(Truck.State.REPAIR) && truck.getId() == truckId) {
+                    System.out.println("Уже в ремонте");
+                    printTableAboutTrucks();
+                } else if (!truck.getState().equals(Truck.State.BASE) && truck.getId() == truckId) {
+                    truck.setState(Truck.State.BASE);
+                    System.out.println("Truck on base");
+                    printTableAboutTrucks();
+                }else if (truckId == truck.getId() && !truck.getDriver().equals("") && !truck.getDriver().isEmpty() && !truck.getState().equals(Truck.State.REPAIR) && truck.getDriver() != null) {
+                    truck.setState(Truck.State.REPAIR);
+                    System.out.println("успешно вышли на ремонт");
+                    printTableAboutTrucks();
+                }
+            }
+
+        } finally {
+            System.out.println("if you want случайным образом изменить состояние грузовика на “route” или “base” return ”1” if not return ”0” ");
+            int randomState = in.nextInt();
+            for (Truck truck : trucks) {
+                if (randomState == 1) {
+                    Random random = new Random();
+                    int stateSecond = random.nextInt(1, 3);
+                    if (stateSecond == 1 && truck.getId() == truckId) {
+                        truck.setState(Truck.State.ROUTE);
+                        System.out.println("успешно вышли на маршрут");
+                        printTableAboutTrucks();
+                    } else if (stateSecond == 2 && truck.getId() == truckId) {
+                        truck.setState(Truck.State.BASE);
+                        System.out.println("Successful truck on base");
+                        printTableAboutTrucks();
+                    }
+                } else {
+                    break;
                 }
             }
 
         }
-        }finally {
-
-        }
-
     }
 
     @Override
@@ -134,7 +159,7 @@ public class ServiceImpl implements Service {
                     break;
                 }
             }
-        }finally {
+        } finally {
 
         }
     }
@@ -146,21 +171,21 @@ public class ServiceImpl implements Service {
                     ___+__________________+_______+_____
                     """);
             trucks.forEach(System.out::println);
-        }finally {
+        } finally {
 
         }
     }
 
     public void printTableAboutTruck() {
-        try{
+        try {
             System.out.println("If you want information about one truck return Id if not just return  return:  ");
             int truckId = in.nextInt();
             if (truckId != 0 && truckId < 6) {
-            trucks.stream().filter(x -> x.getId() == truckId).forEach(System.out::println);
+                trucks.stream().filter(x -> x.getId() == truckId).forEach(System.out::println);
             } else if (truckId > 6) {
-            System.out.println("We not have truck with this id");
-        }
-        }finally {
+                System.out.println("We not have truck with this id");
+            }
+        } finally {
 
         }
     }
@@ -173,21 +198,21 @@ public class ServiceImpl implements Service {
                     ___+__________________+_______
                     """);
             drivers.forEach(System.out::println);
-        }finally {
+        } finally {
 
         }
     }
 
     public void printTableAboutDriver() {
         try {
-        System.out.println("If you want information about one driver return Id if not just return  return:  ");
-        String driverId = in.nextLine();
-        if (driverId.length() == 1) {
-            trucks.stream().filter(x -> driverId.equals(x.getId())).forEach(System.out::println);
-        } else if (driverId.length() > 1) {
-            System.out.println("We not have truck with this id ");
-        }
-        }finally {
+            System.out.println("If you want information about one driver return Id if not just return  return:  ");
+            String driverId = in.nextLine();
+            if (driverId.length() == 1) {
+                trucks.stream().filter(x -> driverId.equals(x.getId())).forEach(System.out::println);
+            } else if (driverId.length() > 1) {
+                System.out.println("We not have truck with this id ");
+            }
+        } finally {
 
         }
     }
