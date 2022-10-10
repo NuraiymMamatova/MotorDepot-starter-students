@@ -14,9 +14,6 @@ public class Truck {
         this.State = State;
 
     }
-    public Truck () {
-
-    }
 
     @Override
     public String toString() {
@@ -24,7 +21,7 @@ public class Truck {
     }
 
     public enum State {
-        BASE, ROUTE, REPAIR;
+        BASE, ROUTE, REPAIR
 
 
     }
